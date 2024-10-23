@@ -45,7 +45,7 @@ class ResPartner(models.Model):
             registration_sequence = self.env['ir.sequence'].next_by_code('res.partner.mentee') or '/'
             
             # Buat registration_number dengan format sesuai citizen
-            vals['registration_number'] = f"{citizen_code}-Reg-{registration_sequence}"
+            vals['registration_number'] = f"{citizen_code}-{registration_sequence}"
         
         return super(ResPartner, self).create(vals)
 
@@ -61,12 +61,19 @@ class ResPartner(models.Model):
                     # Pisahkan registration_number untuk mengganti bagian citizen saja
                     reg_parts = record.registration_number.split('-')
                     # Update hanya bagian citizen dari registration_number
-                    vals['registration_number'] = f"{new_citizen}-Reg-{reg_parts[2]}"
+                    vals['registration_number'] = f"{new_citizen}-{reg_parts[2]}"
                 else:
                     # Jika belum ada registration_number, buat baru
                     registration_sequence = self.env['ir.sequence'].next_by_code('res.partner.mentee') or '/'
-                    vals['registration_number'] = f"{new_citizen}-Reg-{registration_sequence}"
+                    vals['registration_number'] = f"{new_citizen}-{registration_sequence}"
             
             return super(ResPartner, self).write(vals)
+    
+    # @api.onchange('dob')
+    # def _onchange_dob(self):
+    #     for rec in self:
+    #         if rec.dob:
+    #             rec.join_date = rec.dob
+        
 
 

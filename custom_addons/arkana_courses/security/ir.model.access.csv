@@ -1,2 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_mentee_student,access.mentee.student,model_mentee_student,base.group_user,1,1,1,1
+access_course_subject_base_user,access_course_subject_base_user,model_course_subject,base.group_user,1,1,1,1
+access_course_subject_line_base_user,access_course_subject_line_base_user,model_course_subject_line,base.group_user,1,1,1,1
+
+access_course_booking_base_user,access_course_booking_base_user,model_course_booking,base.group_user,1,1,1,1
+access_course_booking_line_base_user,access_course_booking_line_base_user,model_course_booking_line,base.group_user,1,1,1,1

@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    
+    <record id="course_subject_view_tree" model="ir.ui.view">
+        <field name="name">course.subject.view.tree</field>
+        <field name="model">course.subject</field>
+        <field name="arch" type="xml">
+
+            <tree string="Courses">
+                <field name="reference"/>
+                <field name="name"/>
+                <field name="employee_ids" widget="many2many_tags"/>
+                <field name="sale_price"/>
+                <field name="currency_id" column_invisible="1"/>
+            </tree>
+
+        </field>
+    </record>
+
+    <record id="course_subject_view_kanban" model="ir.ui.view">
+        <field name="name">course.subject.view.kanban</field>
+        <field name="model">course.subject</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top mb16">
+                                <div class="o_kanban_record_headings mt4">
+                                    <strong class="o_kanban_record_title">
+                                        <span t-out="record.name.value"/>
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="oe_kanban_details d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="o_kanban_tags_section oe_kanban_partner_categories">
+                                        <span class="oe_kanban_list_many2many">
+                                            <field name="employee_ids" widget="many2many_tags"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom mt8">
+                                    <div class="oe_kanban_bottom_left text-muted">
+                                        <span>
+                                            <strong>
+                                                <t t-out="record.product_id.value"/>
+                                            </strong>
+                                        </span>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <strong>
+                                            <field name="sale_price" widget="monetary"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="course_subject_view_form" model="ir.ui.view">
+        <field name="name">course.subject.view.form</field>
+        <field name="model">course.subject</field>
+        <field name="arch" type="xml">
+            <form string="Course Subject">
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <div class="oe_title">
+                        <label for="name" string="Course Name"/>
+                        <h1>
+                            <field name="name" required="1"/>
+                        </h1>
+                    </div>
+
+                    <group name="general_information" string="General Information">
+                        <group>
+                            <field name="reference" required="1"/>
+                            <field name="company_id" force_save="1" readonly="1" options="{'no_create' : True, 'no_open' : True}"/>
+                            <field name="currency_id" options="{'no_create' : True, 'no_open' : True}"/>
+                        </group>
+                        <group>
+                            <field name="employee_ids" widget="many2many_tags" required="1" options="{'no_create' : True}"/>
+                            <field name="sale_price" required="1"/>
+                            <field name="product_id" string="Category" required="1" />
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page name="description" string="Description">
+                            <field name="description" options="{'resizable': false}" placeholder="Course Description"/>
+                        </page>
+                        <page string="Course Detail">
+                            <field name="subject_line_ids">
+                                <tree editable="bottom">
+                                    <field name="name" required="1"/>
+                                    <field name="course_subject_id" column_invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="course_subject_view_search" model="ir.ui.view">
+        <field name="name">course.subject.view.search</field>
+        <field name="model">course.subject</field>
+        <field name="arch" type="xml">
+            <search string="Courses">
+                
+                <field name="name"/>
+                <field name="reference"/>
+                <field name="employee_ids"/>
+                <field name="product_id"/>
+                <separator/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Category" name="group_by_product_id" domain="[]" context="{'group_by': 'product_id'}"/>
+                </group>
+                
+            </search>
+        </field>
+    </record>
+
+    <record id="course_subject_action" model="ir.actions.act_window">
+        <field name="name">Course Subjects</field>
+        <field name="res_model">course.subject</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="d-block d-sm-none o_view_nocontent_smiling_face">
+                No Subjects Found. Let's Create One!
+            </p>
+        </field>
+    </record>
+
+</odoo>

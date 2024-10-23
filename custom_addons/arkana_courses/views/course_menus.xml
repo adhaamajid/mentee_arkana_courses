@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="courses_root" name="Courses"/>
+    
+    <menuitem id="course_mentee_menu" name="Mentee" parent="courses_root"/>
+    <menuitem id="course_mentee_act" action="mentee_student_action" parent="course_mentee_menu"/>
+
+    <menuitem
+        id="course_mentor_menu"
+        name="Mentor"
+        parent="courses_root"
+    >
+        <menuitem
+            id="course_mentor_act"
+            name="Mentor"
+            action="hr.open_view_employee_list_my"
+        />
+    </menuitem>
+
+    <menuitem
+        id="course_subject_menu"
+        name="Course Subject"
+        parent="courses_root"
+        action="course_subject_action"
+    />
+
+    <menuitem
+        id="course_booking_menu"
+        name="Course Booking"
+        parent="courses_root"
+        action="course_booking_action"
+    />
+</odoo>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-<record model="res.partner" id="res_partner_data_adha">
-    <field name="name">Adha</field>
-    <field name="email">adha@arkana.co.id </field>
-    <field name="street">amepra50</field>
-    <field name="mobile">089999999999</field>
-</record>
+    <record model="res.partner" id="res_partner_data_adha">
+        <field name="name">Adha</field>
+        <field name="email">adha@arkana.co.id </field>
+        <field name="street">amepra50</field>
+        <field name="mobile">089999999999</field>
+    </record>
 </odoo>

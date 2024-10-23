@@ -5,16 +5,22 @@
   'depends': [
     # 'nama_modul',
     'base',
+    'mail',
     'contacts',
-    'hr'
+    'hr',
+    'product',
+    'stock'
   ],
   'data': [
     # 'views/nama_file.xml',
-    # 'security/ir.model.access.csv',
+    'security/ir.model.access.csv',
     'data/partner_data.xml',
-    'views/mentor_student_views.xml',
-    'views/mentee_student_views.xml',
-    'views/mentee_menus.xml',
+    'data/partner_seq_data.xml',
+    # 'views/mentor_student_views.xml',
+    'views/course_student_view.xml',
+    'views/course_subject_view.xml',
+    'views/course_booking_view.xml',
+    'views/course_menus.xml',
 
     
 

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_res_partner_form_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="mark_as_student"
+                        type="object"
+                        string="Mark as Student"
+                        invisible='is_mentee'/>
+                </header>
+            </xpath>
+
+            <xpath expr="//page[@name='internal_notes']" position="after">
+                <page string="Mentee Info" invisible='not is_mentee'>
+                    <group>
+                        <field name="is_mentee" force_save="1" readonly="1"/>
+                        <field name="citizen" required="is_mentee"/>
+                        <field name="registration_number" required="is_mentee"/>
+                        <field name="gender" required="is_mentee"/>
+                        <field name="dob" required="is_mentee"/>
+                        <field name="age"/>
+                        <field name="join_date" required="is_mentee"/>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='company_type']" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="default">individual</attribute>
+            </xpath>
+            <xpath expr="//field[@name='phone']" position="attributes">
+                <attribute name="required">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='email']" position="attributes">
+                <attribute name="required">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mentee_view_tree" model="ir.ui.view">
+        <field name="name">mentee.view.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Students" default_order="registration_number asc">
+                <field name="registration_number"/>
+                <field name="name"/>
+                <field name="gender"/>
+                <field name="join_date"/>
+                <field name="citizen"/>
+                <field name="email"/>
+                <field name="phone"/>
+            </tree>   
+        </field>
+    </record>
+
+    <!-- Action View -->
+    <record id="mentee_student_action" model="ir.actions.act_window">
+        <field name="name">Mentee</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="view_id" ref="mentee_view_tree"/>
+        <field name="context">{
+            'default_is_mentee': True,
+            'search_default_order': 'registration_number asc'
+            }</field>
+        <field name="domain">[('is_mentee', '=', True)]</field>
+    </record>
+    
+</odoo>
