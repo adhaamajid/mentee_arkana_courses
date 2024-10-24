@@ -21,7 +21,7 @@
                     <group>
                         <field name="is_mentee" force_save="1" readonly="1"/>
                         <field name="citizen" required="is_mentee"/>
-                        <field name="registration_number" required="is_mentee"/>
+                        <field name="registration_number" force_save="1" readonly="1"/>
                         <field name="gender" required="is_mentee"/>
                         <field name="dob" required="is_mentee"/>
                         <field name="age"/>

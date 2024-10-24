@@ -16,14 +16,12 @@
     'security/ir.model.access.csv',
     'data/partner_data.xml',
     'data/partner_seq_data.xml',
+    'data/course_booking_cron_data.xml',
     # 'views/mentor_student_views.xml',
     'views/course_student_view.xml',
     'views/course_subject_view.xml',
     'views/course_booking_view.xml',
     'views/course_menus.xml',
-
-    
-
   ],
   'sequence': 1,
   'auto_install': False,

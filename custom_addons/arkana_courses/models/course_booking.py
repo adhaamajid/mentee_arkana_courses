@@ -28,12 +28,31 @@ class CourseBooking(models.Model):
     price_total = fields.Monetary(compute='_compute_price_total', string='Price Total',
                                 store = True, currency_field='currency_id')
     
+    @api.model
+    def _auto_cancel_course_booking(self):
+        today = fields.Date.context_today(self)
+        course_order = self.search([('state', '=', 'draft'), ('expiration_date', '<=', today)])
+        course_order.write({'state' : 'canceled'})
+        return True
+    
     @api.depends('booking_line_ids', 'booking_line_ids.sale_price')
     def _compute_price_total(self):
         for rec in self:
             price_total = sum(rec.booking_line_ids.mapped('sale_price'))
             rec.price_total = price_total
-            
+    
+    def action_confirm(self):
+        for rec in self:
+            sequence_name = self.env['ir.sequence'].next_by_code('course.booking.number.sequence')
+            rec.write({'name' : sequence_name, 'state' : 'confirm'})
+        return True
+
+    def action_set_to_draft(self):
+        self.write({'state' : 'draft'})
+        return True
+    
+    def action_cancel(self):
+        self.write({'state' : 'canceled'})
             
 class CourseBookingLine(models.Model):
     _name = 'course.booking.line'

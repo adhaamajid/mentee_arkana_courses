@@ -27,6 +27,23 @@
         <field name="arch" type="xml">
             <form string="Booking">
                 <header>
+                    <button name="action_confirm"
+                        string="Confirm"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="state != 'draft'"
+                    />
+                    <button name="action_set_to_draft"
+                        string="Set to Draft"
+                        type="object"
+                        invisible="state != 'canceled'"
+                    />
+                    <button name="action_cancel"
+                        string="Cancel Order"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="state != 'confirm'"
+                    />
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,canceled"/>
                 </header>
                 <sheet>
@@ -115,11 +132,27 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
+        <field name="view_id" ref="course_booking_view_tree"/>
+        <field name="search_view_id" ref="course_booking_view_search"/>
         <field name="help" type="html">
             <p class="d-block d-sm-none o_view_nocontent_smiling_face">
                 No Booking Found. Let's Create One!
             </p>
         </field>
+    </record>
+
+    <record id="course_booking_action_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="act_window_id" ref="course_booking_action"/>
+        <field name="view_id" ref="course_booking_view_tree"/>
+    </record>
+
+    <record id="course_booking_action_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="act_window_id" ref="course_booking_action"/>
+        <field name="view_id" ref="course_booking_view_form"/>
     </record>
 
 </odoo>
