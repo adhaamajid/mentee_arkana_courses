@@ -9,7 +9,8 @@
     'contacts',
     'hr',
     'product',
-    'stock'
+    'stock',
+    'sale_management',
   ],
   'data': [
     # 'views/nama_file.xml',
@@ -18,6 +19,7 @@
     'data/partner_seq_data.xml',
     'data/course_booking_cron_data.xml',
     # 'views/mentor_student_views.xml',
+    'views/sale_order_inherit_view.xml',
     'views/course_student_view.xml',
     'views/course_subject_view.xml',
     'views/course_booking_view.xml',

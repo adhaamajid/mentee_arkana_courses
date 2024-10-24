@@ -27,6 +27,13 @@ class CourseBooking(models.Model):
     booking_line_ids = fields.One2many('course.booking.line', 'course_booking_id', string='Booking Line')
     price_total = fields.Monetary(compute='_compute_price_total', string='Price Total',
                                 store = True, currency_field='currency_id')
+    sale_order_line_ids = fields.One2many('sale.order', 'course_booking_id', string='Sale Order Line')
+    sale_order_count = fields.Integer(compute='_compute_sale_order_count', string='Sale Order Count')
+    
+    @api.depends('sale_order_line_ids')
+    def _compute_sale_order_count(self):
+        for rec in self:
+            rec.sale_order_count = len(rec.sale_order_line_ids)
     
     @api.model
     def _auto_cancel_course_booking(self):
@@ -45,14 +52,59 @@ class CourseBooking(models.Model):
         for rec in self:
             sequence_name = self.env['ir.sequence'].next_by_code('course.booking.number.sequence')
             rec.write({'name' : sequence_name, 'state' : 'confirm'})
+            rec._create_sale_order()
         return True
-
+    
+    def _create_sale_order(self):
+        sale_order_obj = self.env['sale.order']
+        sale_order_values = self._prepare_sale_order_values()
+        sale_order_id = sale_order_obj.create(sale_order_values)
+        return sale_order_id
+        
+    def _prepare_sale_order_values(self):
+        return {
+            'partner_id' : self.partner_id.id,
+            'user_id' : self.user_id.id,
+            'origin' : self.name,
+            'validity_date' : self.expiration_date,
+            'date_order' : fields.Datetime.now(),
+            'course_booking_id' : self.id,
+            'order_line' : self._prepare_order_line()
+        }
+    
+    def _prepare_order_line(self):
+        # order_line_values = []
+        # for record in self.booking_line_ids:
+        #     order_line_values.append((0, 0, {
+        #         'course_booking_line_id' : record.id,
+        #         'product_id' : record.product_id.id,
+        #         'name' : '%s - %s' % (record.product_id.name, record.course_subject_id.name),
+        #         'product_uom' : record.product_id.uom_id.id,
+        #         'product_uom_qty' : 1,
+        #         'price_unit' : record.sale_price
+        #     }))
+        values = [(0, 0, {
+            'course_booking_line_id' : record.id,
+            'product_id' : record.product_id.id,
+            'name' : '%s - %s' % (record.product_id.name, record.course_subject_id.name),
+            'product_uom' : record.product_id.uom_id.id,
+            'product_uom_qty' : 1,
+            'price_unit' : record.sale_price
+        }) for record in self.booking_line_ids]
+        return values
+        
     def action_set_to_draft(self):
         self.write({'state' : 'draft'})
         return True
     
     def action_cancel(self):
         self.write({'state' : 'canceled'})
+    
+    def action_sale_order_view(self):
+        action = self.env['ir.actions.act_window']._for_xml_id('sale.act_res_partner_2_sale_order')
+        action["domain"] = [("course_booking_id", "in", self.ids)]
+        action["context"] = {'create' : 0, 'edit' : 0}
+        return action
             
 class CourseBookingLine(models.Model):
     _name = 'course.booking.line'
