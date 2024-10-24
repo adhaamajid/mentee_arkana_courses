@@ -31,7 +31,6 @@
             </xpath>
             <xpath expr="//field[@name='company_type']" position="attributes">
                 <attribute name="readonly">1</attribute>
-                <attribute name="default">individual</attribute>
             </xpath>
             <xpath expr="//field[@name='phone']" position="attributes">
                 <attribute name="required">True</attribute>
@@ -66,6 +65,7 @@
         <field name="view_id" ref="mentee_view_tree"/>
         <field name="context">{
             'default_is_mentee': True,
+            'default_is_company' : False,
             'search_default_order': 'registration_number asc'
             }</field>
         <field name="domain">[('is_mentee', '=', True)]</field>
