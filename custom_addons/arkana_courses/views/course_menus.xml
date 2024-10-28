@@ -22,4 +22,10 @@
         name="Course Subject"
         parent="courses_root"
         action="course_subject_action"/>
+
+    <menuitem
+        id="course_booking_menu"
+        name="Course Booking"
+        parent="courses_root"
+        action="course_booking_action"/>
 </odoo>

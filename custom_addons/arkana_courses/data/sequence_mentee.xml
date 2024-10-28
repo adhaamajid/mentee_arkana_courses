@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_res_partner_mentee" model="ir.sequence">
+        <field name="name">Mentee Registration Sequence</field>
+        <field name="code">res.partner.mentee</field>
+        <field name="prefix">REG-</field> <!-- Kosong karena format akan ditentukan oleh citizen -->
+        <field name="padding">4</field> <!-- Panjang digit sequence -->
+        <field name="number_increment">1</field> <!-- Inkrement setiap kali sequence digunakan -->
+    </record>
+    
+
+</odoo>
+
+    

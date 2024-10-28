@@ -1,0 +1,167 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    
+    <record id="course_booking_view_tree" model="ir.ui.view">
+        <field name="name">course.booking.view.tree</field>
+        <field name="model">course.booking</field>
+        <field name="arch" type="xml">
+
+            <tree string="Course Bookings">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="booking_date"/>
+                <field name="expiration_date" optional="hide" widget="remaining_days"/>
+                <field name="user_id"/>
+                <field name="price_total" sum="Total Price"/>
+                <field name="state" widget="badge" decoration-success="state in ['confirm', 'done']"
+                    decoration-info="state == 'draft'" decoration-danger="state == 'canceled'"/>
+                    <!-- widget="badge" digunakan untuk meampilkn text menjadi berwarna dgn kondisi 
+                    dan warna pun sebenre bisa kita rubah mengguankan kode bootstrap -->
+                <field name="currency_id" column_invisible="1"/>
+                <!-- coloum_invesible sudah adanya mulai dari odoo 17 
+                di odoo 16 dlu pake attrs=("'invisible")-->
+            </tree>
+
+        </field>
+    </record>
+
+    <record id="course_booking_view_form" model="ir.ui.view">
+        <field name="name">course.booking.view.form</field>
+        <field name="model">course.booking</field>
+        <field name="arch" type="xml">
+            <form string="Booking">
+                <header>
+                    <button name="action_confirm"
+                        type="object"
+                        string="Confirm"
+                        class="oe_highlight"
+                        invisible='state == "confirm"'/>
+                    <button name="action_draft"
+                        type="object"
+                        string="Draft"
+                        invisible='state == "draft"'/>
+                    <button name="action_cancel"
+                        type="object"
+                        string="Cancel"
+                        class="oe_highlight"
+                        invisible='state == "canceled"'/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,canceled"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_sale_order_view" type="object" class="oe_stat_button" icon="fa-list">
+                            <field name="sale_order_count" string="Sale Order" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="action" name="%(arkana_courses.sale_order_course_action)d" icon="fa-list">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Sale Order</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <label for="name" string="Course Booking Name"/>
+                        <h1>
+                            <field name="name" force_save="1" readonly="1" required="1"/>
+                        </h1>
+                    </div>
+
+                    <group string="General Info" name="general_info">
+                        <group>
+                            <field name="partner_id" required="1" readonly="state != 'draft'"
+                                context="{'default_is_mentee' : True, 'default_is_company' : False}"/>
+                            <field name="user_id" required="1" options="{'no_create' : True}" readonly="state != 'draft'"/>
+                            <field name="company_id" invisible="1" readonly="1"/>
+                            <field name="currency_id" invisible="1" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="booking_date" required="1" readonly="state != 'draft'"/>
+                            <field name="expiration_date" required="1" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page name="booking_line" string="Booking Lines">
+                            <field name="booking_line_ids" readonly="state != 'draft'">
+                                <tree editable="bottom">
+                                    <field name="course_booking_id" column_invisible="1" force_save="1" readonly="1"/>
+                                    <field name="partner_id" column_invisible="1" force_save="1" readonly="1"/>
+                                    <field name="currency_id" column_invisible="1" force_save="1" readonly="1"/>
+                                    <field name="course_subject_ids" column_invisible="1" />
+                                    <field name="employee_ids" column_invisible="1" />
+                                    <field name="product_id" required="1" options="{'no_create' : True}"/>
+                                    <field name="course_subject_id" required="product_id" options="{'no_create' : True}" readonly="not product_id"/>
+                                    <field name="reference"/>
+                                    <field name="employee_id" required="course_subject_id" options="{'no_create' : True}" readonly="not course_subject_id"/>
+                                    <field name="sale_price" force_save="1" readonly="1"/>
+                                </tree>
+                            </field>
+
+                            <div class="text-end font-weight-bold">
+                                <field name="price_total" />
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="course_booking_view_search" model="ir.ui.view">
+        <field name="name">course.booking.view.search</field>
+        <field name="model">course.booking</field>
+        <field name="arch" type="xml">
+            <search string="Course Booking Search">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <separator/>
+
+                <filter string="Date" name="date" date="booking_date"/>
+                <filter string="Last Month" name="course_booking_last_month"
+                    domain="[('booking_date', '&gt;=', (context_today() + relativedelta(months=-1, day=1)).strftime('%Y-%m-%d')), 
+                            ('booking_date', '&lt;=', (context_today() + relativedelta(day=1, days=-1)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Customer" name="group_by_partner_id" domain="[]" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Salesperson" name="group_by_salesperson" domain="[]" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="course_booking_action" model="ir.actions.act_window">
+        <field name="name">Course Booking</field>
+        <field name="res_model">course.booking</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="view_id" ref="course_booking_view_tree"/>
+        <field name="search_view_id" ref="course_booking_view_search"/>
+        <field name="help" type="html">
+            <p class="d-block d-sm-none o_view_nocontent_smiling_face">
+                No Booking Found. Let's Create One!
+            </p>
+        </field>
+    </record>
+
+    <record id="course_booking_action_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="act_window_id" ref="course_booking_action"/>
+        <field name="view_id" ref="course_booking_view_tree"/>
+    </record>
+
+    <record id="course_booking_action_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="act_window_id" ref="course_booking_action"/>
+        <field name="view_id" ref="course_booking_view_form"/>
+    </record>
+
+</odoo>

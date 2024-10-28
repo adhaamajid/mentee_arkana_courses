@@ -9,6 +9,9 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
 
+            <!-- penulisan boolean nya juga bisa ditulis dgn seperti ini:
+            invisible='is_mentee' -->
+
                 <xpath expr="//sheet" position="before">
                     <header>
                         <button name="mark_as_student"
@@ -42,14 +45,6 @@
                     <attribute name="required">True</attribute>
                 </xpath>
             </field>
-        </record>
-
-        <record id="seq_res_partner_mentee" model="ir.sequence">
-            <field name="name">Mentee Registration Sequence</field>
-            <field name="code">res.partner.mentee</field>
-            <field name="prefix"></field> <!-- Kosong karena format akan ditentukan oleh citizen -->
-            <field name="padding">4</field> <!-- Panjang digit sequence -->
-            <field name="number_increment">1</field> <!-- Inkrement setiap kali sequence digunakan -->
         </record>
 
         <record id="mentee_view_tree" model="ir.ui.view">
