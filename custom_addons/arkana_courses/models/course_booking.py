@@ -52,7 +52,15 @@ class CourseBooking(models.Model):
         for rec in self:
             sequence_name = self.env['ir.sequence'].next_by_code('course.booking.number.sequence')
             rec.write({'name' : sequence_name, 'state' : 'confirm'})
-            rec._create_sale_order()
+            rec._process_sale_order()
+        return True
+    
+    def _process_sale_order(self):
+        values = self._prepare_sale_order_values()
+        if (not self.sale_order_line_ids) or all(order.state != 'draft' for order in self.sale_order_line_ids):
+            order_id = self.env['sale.order'].create(values)
+            return order_id
+        self.sale_order_line_ids.filtered(lambda x : x.state == 'draft').write(values)
         return True
     
     def _create_sale_order(self):
@@ -91,6 +99,9 @@ class CourseBooking(models.Model):
             'product_uom_qty' : 1,
             'price_unit' : record.sale_price
         }) for record in self.booking_line_ids]
+        if self.sale_order_line_ids:
+            result = [(5, 0, 0)] + values
+            return result
         return values
         
     def action_set_to_draft(self):
@@ -98,6 +109,7 @@ class CourseBooking(models.Model):
         return True
     
     def action_cancel(self):
+        self._check_sale_order_state()
         self.write({'state' : 'canceled'})
     
     def action_sale_order_view(self):
@@ -105,6 +117,18 @@ class CourseBooking(models.Model):
         action["domain"] = [("course_booking_id", "in", self.ids)]
         action["context"] = {'create' : 0, 'edit' : 0}
         return action
+    
+    def unlink(self):
+        for rec in self:
+            if rec.state not in ['draft']:
+                raise ValidationError("You can't Delete Course Order because is not in Draft State")
+            rec._check_sale_order_state()
+        return super(CourseBooking, self).unlink()
+
+    def _check_sale_order_state(self):
+        not_drafted_sale_order = self.sale_order_line_ids.filtered(lambda x : x.state not in ['draft', 'cancel'])
+        if not_drafted_sale_order:
+            raise ValidationError("You can't Cancel / Delete Course Order because Any SO is not in Draft State")
             
 class CourseBookingLine(models.Model):
     _name = 'course.booking.line'
